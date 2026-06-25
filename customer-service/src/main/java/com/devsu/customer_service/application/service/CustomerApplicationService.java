@@ -2,12 +2,16 @@ package com.devsu.customer_service.application.service;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devsu.customer_service.application.dto.request.CreateCustomerRequest;
 import com.devsu.customer_service.application.dto.request.UpdateCustomerRequest;
 import com.devsu.customer_service.application.dto.response.CustomerResponse;
+import com.devsu.customer_service.application.event.CustomerCreatedInternalEvent;
+import com.devsu.customer_service.application.event.CustomerDeactivatedInternalEvent;
+import com.devsu.customer_service.application.event.CustomerUpdatedInternalEvent;
 import com.devsu.customer_service.application.mapper.CustomerMapper;
 import com.devsu.customer_service.domain.entity.Customer;
 import com.devsu.customer_service.domain.exception.CustomerAlreadyExistsException;
@@ -23,6 +27,7 @@ public class CustomerApplicationService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public CustomerResponse createCustomer(CreateCustomerRequest customerRequest) {
         if (customerRepository.existsByIdentification(customerRequest.identification())){
@@ -41,6 +46,14 @@ public class CustomerApplicationService {
         );
 
         Customer savedCustomer = customerRepository.save(customer);
+
+        applicationEventPublisher.publishEvent(
+            new CustomerCreatedInternalEvent(
+                savedCustomer.getId(),
+                savedCustomer.getName(),
+                savedCustomer.isActive()
+            )
+        );
         
         return customerMapper.toResponse(savedCustomer);
     }
@@ -80,6 +93,14 @@ public class CustomerApplicationService {
             request.active()           
         );
 
+        applicationEventPublisher.publishEvent(
+            new CustomerUpdatedInternalEvent(
+                customer.getId(),
+                customer.getName(),
+                customer.isActive()
+            )
+        );
+
         return customerMapper.toResponse(customer);
     }
 
@@ -90,6 +111,12 @@ public class CustomerApplicationService {
             );
 
         customer.deactivate();
+
+        applicationEventPublisher.publishEvent(
+            new CustomerDeactivatedInternalEvent(
+                customer.getId()
+            )
+        );
 
         return customerMapper.toResponse(customer);
     }

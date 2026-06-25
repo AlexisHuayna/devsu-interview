@@ -2,6 +2,10 @@ package com.devsu.account_service.domain.entity;
 
 import java.math.BigDecimal;
 
+import com.devsu.account_service.domain.exception.AccountInactiveException;
+import com.devsu.account_service.domain.exception.InsufficientBalanceException;
+import com.devsu.account_service.domain.exception.InvalidTransactionAmountException;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,7 +28,6 @@ import lombok.Setter;
     }
 )
 @Getter
-@Setter
 @NoArgsConstructor
 public class Account extends BaseEntity {
     @Column(
@@ -53,11 +56,74 @@ public class Account extends BaseEntity {
     private BigDecimal availableBalance;
 
     @Column(nullable = false)
-    private Boolean active;
+    private boolean active;
 
     @Column(nullable = false)
     private Long customerId;
 
     @Version
     private Long version;
+
+    public Account(
+        String accountNumber,
+        AccountType accountType,
+        BigDecimal initialBalance,
+        Long customerId
+    ){
+        this.accountNumber = accountNumber;
+        this.accountType = accountType;
+        this.initialBalance = initialBalance;
+        this.availableBalance = initialBalance;
+        this.active = true;
+        this.customerId = customerId;
+    }
+
+    public void deactivate() {
+        this.active = false;
+    }
+
+    public void update(
+        boolean active
+    ) {
+        this.active = active;
+    }
+
+    public void deposit(
+        BigDecimal amount
+    ) {
+        validateAmount(amount);
+
+        this.availableBalance = this.availableBalance.add(amount);
+    }
+
+    public void withdraw(
+        BigDecimal amount
+    ) {
+        validateAmount(amount);
+
+        if(
+            this.availableBalance.compareTo(amount) < 0
+        ) {
+            throw new InsufficientBalanceException();
+        }
+
+        this.availableBalance = this.availableBalance.subtract(amount);
+    }
+
+    public void activate() {
+        this.active = true;
+    }
+
+    public void ensureActive() {
+        if(!active) {
+            throw new AccountInactiveException(accountNumber);
+        }
+    }
+
+    private void validateAmount(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidTransactionAmountException(amount);
+        }
+    }
+
 }
