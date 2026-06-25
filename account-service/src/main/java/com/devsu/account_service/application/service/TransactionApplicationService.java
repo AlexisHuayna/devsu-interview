@@ -39,7 +39,9 @@ public class TransactionApplicationService {
         Account account = getRequiredAccount(request.accountNumber());
         account.ensureActive();
 
-        BigDecimal normalizedAmount = request.amount().abs();
+        BigDecimal transactionAmount = request.amount();
+
+        BigDecimal normalizedAmount = transactionAmount.abs();
 
         applyTransaction(
             account,
@@ -49,7 +51,7 @@ public class TransactionApplicationService {
         
         Transaction transaction = new Transaction(
             request.transactionType(),
-            request.amount(),
+            transactionAmount,
             account.getAvailableBalance(),
             account.getId()
         );
@@ -79,6 +81,10 @@ public class TransactionApplicationService {
     @Transactional(readOnly = true)
     public List<TransactionResponse> getTransactions() {
         List<Transaction> transactions = transactionRepository.findAll();
+
+        if(transactions.isEmpty()){
+            return List.of();
+        }
 
         List<Long> accountIds = transactions
                 .stream()

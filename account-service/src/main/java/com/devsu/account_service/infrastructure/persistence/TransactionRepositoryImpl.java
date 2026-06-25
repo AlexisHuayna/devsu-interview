@@ -28,8 +28,11 @@ public class TransactionRepositoryImpl implements TransactionRepository{
     }
 
     @Override
-    public List<Transaction> findByAccountIdAndTransactionDateBetween(Long accountId, LocalDateTime start,
-            LocalDateTime end) {
+    public List<Transaction> findByAccountIdAndTransactionDateBetween(
+        Long accountId,
+        LocalDateTime start,
+        LocalDateTime end
+    ) {
         return repository.findByAccountIdAndTransactionDateBetween(accountId, start, end);
     }
 
@@ -41,6 +44,15 @@ public class TransactionRepositoryImpl implements TransactionRepository{
     @Override
     public List<Transaction> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public List<Transaction> findByAccountIdInAndTransactionDateBetween(
+        List<Long> accountIds,
+        LocalDateTime start,
+        LocalDateTime end
+    ) {
+        return repository.findByAccountIdInAndTransactionDateBetween(accountIds, start, end);
     }
     
 }

@@ -21,4 +21,11 @@ public interface TransactionRepository {
     Optional<Transaction> findById(Long id);
 
     List<Transaction> findAll();
+
+    List<Transaction>
+        findByAccountIdInAndTransactionDateBetween(
+            List<Long> accountIds,
+            LocalDateTime start,
+            LocalDateTime end
+        );
 }
