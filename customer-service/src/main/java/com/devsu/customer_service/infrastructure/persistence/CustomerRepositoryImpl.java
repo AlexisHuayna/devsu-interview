@@ -45,5 +45,10 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     public List<Customer> findByActiveTrue() {
         return repository.findByActiveTrue();
     }
+
+    @Override
+    public void deleteAll() {
+        repository.deleteAll();
+    }
     
 }

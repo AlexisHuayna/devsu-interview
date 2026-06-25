@@ -12,5 +12,5 @@ public interface JpaCustomerRepository
     boolean existsByIdentification(String identification);
 
     List<Customer> findByActiveTrue();
-    
+
 }

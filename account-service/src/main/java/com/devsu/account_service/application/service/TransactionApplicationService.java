@@ -162,11 +162,11 @@ public class TransactionApplicationService {
         BigDecimal amount
     ){
         switch (transactionType) {
-            case TransactionType.DEPOSIT:
+            case DEPOSIT:
                 account.deposit(amount);
                 break;
 
-            case TransactionType.WITHDRAWAL:
+            case WITHDRAWAL:
                 account.withdraw(amount);
                 break;
 

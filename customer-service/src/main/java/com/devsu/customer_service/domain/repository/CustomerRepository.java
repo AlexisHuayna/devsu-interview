@@ -18,4 +18,6 @@ public interface CustomerRepository {
     boolean existsByIdentification(String identification);
 
     List<Customer> findByActiveTrue();
+
+    void deleteAll();
 }
