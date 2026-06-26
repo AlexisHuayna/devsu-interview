@@ -65,7 +65,7 @@ public class Transaction extends BaseEntity {
         Objects.requireNonNull(balance);
         Objects.requireNonNull(accountId);
 
-        if(amount.compareTo(BigDecimal.ZERO) <= 0) {
+        if(amount.compareTo(BigDecimal.ZERO) == 0) {
             throw new InvalidTransactionAmountException(amount);
         }
 

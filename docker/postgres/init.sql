@@ -139,7 +139,7 @@ CREATE TABLE transactions (
     ),
 
     amount NUMERIC(19,2) NOT NULL CHECK (
-        amount > 0
+        amount <> 0
     ),
 
     balance NUMERIC(19,2) NOT NULL,

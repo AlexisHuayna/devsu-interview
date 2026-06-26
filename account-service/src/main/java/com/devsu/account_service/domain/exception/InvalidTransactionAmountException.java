@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 public class InvalidTransactionAmountException extends RuntimeException {
     public InvalidTransactionAmountException(BigDecimal amount) {
         super(
-            "Transaction amount must be greater than zero. Received: "
+            "Transaction amount must be different than zero. Received: "
             + amount
         );
     }
